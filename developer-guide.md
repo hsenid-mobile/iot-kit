@@ -82,7 +82,7 @@ For more details, Please check [Bitlash Commands](https://github.com/billroy/bit
 ```
 'type'     : command type
 'content'  : Bitlash program
-'device'   : imei number of the device
+'device'   : mobile number /masked mobile number / imei number of the device
 ```
 
 #### Status Message Format
