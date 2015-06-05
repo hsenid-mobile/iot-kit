@@ -35,11 +35,12 @@ Following Message Types are defined in the API
 This message is sent by the device to application, when device starts.
 Purpose of this message is to identify the device and it's name. 
 
+
 ```json
 { "type"      : "boot",
   "device"    : "imei:866762024216218"}
 ```
-  
+
 parameter descriptions
 
 ```
@@ -56,8 +57,8 @@ This message is sent by application to device, when application wants to load a 
 
 For example: 
 
-Assume that, the device is connected to sensor on analog pin0 and
-we want to get a notification when pin0 value goes to < 200
+Assume that, the device is connected to sensor on analog pin0 
+and we want to get a notification when pin0 value goes to < 200
 
 Such a program can be written in Bitlash like following
 
@@ -72,9 +73,9 @@ If you don't need notifications, you can skip using the print function.
 To load this program to our "Coffee Machine 001", we have to send command message like following
 
 ```json
-{ "type" : "command",
+{ "type"    : "command",
   "content" : "while 1 {if(a0 < 200){print 'level=' a0;}; snooze(1000); };",
-  "imei:866762024216218" }
+  "device"  : "imei:866762024216218" }
 ```
 For more details, Please check [Bitlash Commands](https://github.com/billroy/bitlash/wiki/commands)
 
@@ -89,9 +90,9 @@ For more details, Please check [Bitlash Commands](https://github.com/billroy/bit
 This message is sent by device to application, when the command is loaded successfully in the device
 
 ```json
-{ "type": "status",
-  "content": "S1000",
-  "imei:866762024216218"}
+{ "type"    : "status",
+  "content" : "S1000",
+  "device"  : "imei:866762024216218"}
 ```
 
 ```
@@ -105,9 +106,9 @@ This message is sent by device to application, when the command is loaded succes
 This message is sent by device to application, when the program print it's output
 
 ```json
-{ "type": "notification",
-  "content": "level=160",
-  "imei:866762024216218"}
+{ "type"    : "notification",
+  "content" : "level=160",
+  "device"  : "imei:866762024216218"}
 ```
 
 ```
