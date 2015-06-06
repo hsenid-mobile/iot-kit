@@ -31,9 +31,10 @@ volatile bool device_registered = false;
 char* notification_data;
 
 char* saved = "saved";
-char* stop_process = "{stop 0;}";
+char* stop_process = "stop *;";
+char* rm_process = "rm schedule;";
                                        
-int max_notification_attempts = 3; 
+int max_ntfy_attempts = 3;
 int notification_retry_count = 0;
 
 String return_data="";
@@ -74,7 +75,7 @@ void setup() {
 }
 
 void loop() {
-  runBitlash();
+  runBitlash();   
 
   if (!gprs_ready) {
     if (!setupIfGPRSNotReady()) {
@@ -87,7 +88,7 @@ void loop() {
        return;
     } 
   } 
- 
+      
   if (!device_registered) {
       String boot_cmd = get_boot_cmd();
       Serial.println(boot_cmd);
@@ -109,7 +110,7 @@ void loop() {
       } else {
         Serial.println("Unexpected message received, reconnecting");
         gprs_connected = false;
-      }  
+      } 
   }
 
 }
@@ -217,35 +218,48 @@ void send_notification(){
   write_message(notification);
   String response = read_message();
   
-  Serial.println(response);
-  if (response == OK){
+  if (response.startsWith("Ok")){
     notification_data = "";  
     notification_retry_count = 0;  
-  }
-  else if (response != OK & notification_retry_count < max_notification_attempts){
-    delay(100);
-    send_notification();
+  } else if (notification_retry_count < max_ntfy_attempts){
+    delay(1000);
     notification_retry_count +=1;
+    send_notification();
   }
 }
 
 void execute_instructions(String instruction){
+  instruction.replace("'", "\"");
+   
   Serial.println(instruction);
   
-  instruction.replace("'", "\"");
-  
-  if (instruction.substring(0,8) == "function") {
-    char command_data[200];                              
-    instruction.toCharArray(command_data, instruction.length() + 1);
-    doCommand(stop_process);
+  String cmd =  split_str(instruction, ':', 1);
+ 
+  if (cmd.startsWith("function")) {
+    if (cmd.startsWith("function schedule")) {
+       char command_data[256];                              
+       cmd.toCharArray(command_data, cmd.length() + 1);
     
-    doCommand(command_data);
-    doCommand("run iot_function;");
-    Serial.println(F("Bitlash command running..")); 
-  }
-  else { 
-    Serial.println(F("Command is executing.."));    
-    String cmd =  split_str(instruction, ':', 1);
+       doCommand(stop_process);
+       doCommand(rm_process);
+    
+       doCommand(command_data);
+       doCommand("run schedule;");
+       Serial.println("Starting schedule command");
+    } else if (cmd.startsWith("function startup")) {
+       char command_data[256];                              
+       cmd.toCharArray(command_data, cmd.length() + 1);
+    
+       doCommand(command_data);
+       doCommand("run boot;");
+       Serial.println("Executing startup command");   
+    } else {
+       notification_data = "Unsupported function format";
+       Serial.println(notification_data);
+       send_notification();  
+    }   
+  } else { 
+    Serial.println("Running do command..");    
     char command_data[cmd.length()];
     
     cmd.toCharArray(command_data, cmd.length() + 1);

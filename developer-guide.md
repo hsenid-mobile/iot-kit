@@ -63,7 +63,7 @@ and we want to get a notification when pin0 value goes to < 200
 Such a program can be written in Bitlash like following
 
 ```c
-"while 1 {if(a0 < 200){print 'level=' a0;}; snooze(1000); };"
+"function schedule {if(a0 < 200){print 'level=' a0;};}"
 ```
 
 Here print function is used to collect the output and send back as notification message.
@@ -74,7 +74,7 @@ To load this program to our "Coffee Machine 001", we have to send command messag
 
 ```json
 { "type"    : "command",
-  "content" : "while 1 {if(a0 < 200){print 'level=' a0;}; snooze(1000); };",
+  "content" : "function schedule {if(a0 < 200){print 'level=' a0;};};",
   "device"  : "imei:866762024216218" }
 ```
 For more details, Please check [Bitlash Commands](https://github.com/billroy/bitlash/wiki/commands)
@@ -123,7 +123,35 @@ This message is sent by device to application, when the program print it's outpu
 Please check the [IoT Sample Application](https://github.com/hsenid-mobile/iot-app)
 
 
+### Sample Websocket Console output
 
+You can install [wscat](https://www.npmjs.com/package/wscat) and control the device for fun.
+
+```
+
+$ wscat -c ws://api.hsenidmobile.com:9008/iot/connect?token=<your iot token> -p 13
+
+< {"device":"imei:866762024216218","type":"boot"}
+
+> {"type":"command","content":"function schedule { if(a0 > 300){print 'level=' a0;};}","device":"imei:866762024216218"}
+
+< {"content":"level=475","device":"imei:866762024216218","type":"notification"}
+
+< {"content":"level=475","device":"imei:866762024216218","type":"notification"}
+
+< {"content":"level=298","device":"imei:866762024216218","type":"notification"}
+
+< {"content":"level=318","device":"imei:866762024216218","type":"notification"}
+
+< {"content":"level=320","device":"imei:866762024216218","type":"notification"}
+
+< {"content":"level=329","device":"imei:866762024216218","type":"notification"}
+
+< {"content":"level=346","device":"imei:866762024216218","type":"notification"}
+
+< {"content":"level=307","device":"imei:866762024216218","type":"notification"}
+
+```
  
  
  
