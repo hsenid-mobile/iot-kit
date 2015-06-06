@@ -8,6 +8,7 @@ Kit for hSenid Mobile Telco Application Platform's IOT API
 
 2. Install [Arduino IDE](http://www.arduino.cc/en/main/software) in your computer
 
+3. Follow [this link](https://github.com/hsenid-mobile/iot-kit/wiki/How-to-connect-SIM900A) to connect the board with SIM900A GSM Shield 
 
 ### Step 1.
 git clone https://github.com/hsenid-mobile/iot-kit.git
