@@ -69,6 +69,11 @@ void serialHandler(byte b) {
 
 void setup() {
   initBitlash(9600);
+  Serial1.begin(9600);
+  Serial2.begin(9600); 
+  Serial3.begin(9600);
+  addBitlashFunction("sw", (bitlash_function) sw);
+  addBitlashFunction("sr", (bitlash_function) sr);
   setOutputHandler(&serialHandler);
   Serial.println("Booting the Device");
   setupIfGPRSNotReady();
@@ -286,6 +291,45 @@ String get_boot_cmd() {
    
   return boot_cmd; 
 }  
+
+
+void sw(){
+   int serial_port = getarg(1);
+   int value =  getarg(2);
+  
+   if (serial_port==1){
+     Serial1.write(value);
+   }else if (serial_port==2){
+     Serial2.write(value);
+   }else if (serial_port==3){
+     Serial3.write(value);
+   }else{
+     doCommand("print \"Invalid Serial Port\"");
+   }  
+}
+
+numvar sr(){
+   int incomingByte = 0;                      
+   int serial_port = getarg(1);
+      
+   if (serial_port==1){
+      if (Serial1.available() > 0) {
+         incomingByte = Serial1.read();
+      }
+   }else if (serial_port==2){
+      if (Serial2.available() > 0) {
+         incomingByte = Serial2.read();
+      }
+   }else if (serial_port==3){
+      if (Serial3.available() > 0) {
+         incomingByte = Serial3.read();
+      }
+   }else{
+         incomingByte = -1;
+   }   
+   return incomingByte; 
+}
+
 
 String split_str(String data, char separator, int index) {
   int found = 0;
