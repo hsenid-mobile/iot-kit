@@ -4,19 +4,19 @@ Kit for hSenid Mobile Telco Application Platform's IOT API
 ## Installation Guide
 
 ### Prerequisites
-Hardware
+#### Hardware
 
-1. Arduino Mega 2560 Board
-2. SIM900A GSM Shield
-3. SMPS Power Adapter for Arduino (9V 2A)
-4. Dialog SIM
+* Arduino Mega 2560 Board
+* SIM900A GSM Shield
+* SMPS Power Adapter for Arduino (9V 2A)
+* Dialog SIM
 
 Follow [this link](https://github.com/hsenid-mobile/iot-kit/wiki/How-to-connect-SIM900A) to connect the board with SIM900A GSM Shield  
 
 
-Software
+#### Software
 
-1. Install [Arduino IDE](http://www.arduino.cc/en/main/software) in your computer
+* Install [Arduino IDE](http://www.arduino.cc/en/main/software) in your computer
 
 ### Step 1.
 git clone https://github.com/hsenid-mobile/iot-kit.git
