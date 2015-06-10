@@ -28,6 +28,8 @@ volatile bool gprs_ready = false;
 volatile bool gprs_connected = false;
 volatile bool device_registered = false;
 
+String command_data = "";
+
 char* notification_data;
 
 char* saved = "saved";
@@ -106,9 +108,9 @@ void loop() {
         Serial.println("No pending command");
       } else if(response.startsWith("Cmd")) {
         Serial.println("New command received");
-        execute_instructions(response);
+        execute_instructions(response);        
       } else {
-        Serial.println("Unexpected message received, reconnecting");
+        Serial.println("Unexpected message/read timeout, reconnecting");
         gprs_connected = false;
       } 
   }
@@ -116,33 +118,40 @@ void loop() {
 }
 
 String read_message(){
-  int attempts = 0;
+  String data = "";
   
-  while(gprs.readable() <= 0 && attempts < 3) {
-   delay(200); 
-   attempts++;
+  int len = 0;
+  int attempts = 0;
+  bool reached_eof = false;
+  
+  receive_buffer[len] = '\0';
+  
+  while(!gprs.readable() && attempts <= 3) {
+    delay(100); 
+    attempts++;
   }  
   
-  int ret = gprs.recv(receive_buffer, sizeof(receive_buffer)-1);
-
-  receive_buffer[ret] = '\0';
-  
-  if(attempts > 3 || ret <= 0) {
+  if(!gprs.readable() && attempts >= 3) {
     gprs.close();
     gprs_connected = false;
+    return "";//this is read timeout
+  } 
+ 
+  len = gprs.recv(receive_buffer, sizeof(receive_buffer)-1);
     
-    return "";
-  } else {
-     String data = String(receive_buffer);
-     int len = data.length();
-     
-     if (data.endsWith("#")) {
-       data.remove(len - 1);
-       return data;
-     } else {
-       return data;
-     }
+  if (len <= 0) {
+    return "";//this is read timeout 
+  } 
+        
+  for (int i=0; i < len; i++) {
+    reached_eof = receive_buffer[i] == '#'; 
+      
+    if(reached_eof) {
+      receive_buffer[i] = '\0'; 
+    }  
   }     
+  
+  return String(receive_buffer);     
 }
 
 void write_message(String message){
