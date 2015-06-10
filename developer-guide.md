@@ -133,23 +133,11 @@ $ wscat -c ws://api.hsenidmobile.com:9008/iot/connect?token=<your iot token> -p 
 
 < {"device":"imei:866762024216218","type":"boot"}
 
-> {"type":"command","content":"function schedule { if(a0 > 300){print 'level=' a0;};}","device":"imei:866762024216218"}
+> {"type":"command","content":"print 'pin d0=' d0;","device":"imei:866762024216218"}
 
-< {"content":"level=475","device":"imei:866762024216218","type":"notification"}
+< {"content":"pin d0=0","device":"imei:866762024216218","type":"notification"}
 
-< {"content":"level=475","device":"imei:866762024216218","type":"notification"}
-
-< {"content":"level=298","device":"imei:866762024216218","type":"notification"}
-
-< {"content":"level=318","device":"imei:866762024216218","type":"notification"}
-
-< {"content":"level=320","device":"imei:866762024216218","type":"notification"}
-
-< {"content":"level=329","device":"imei:866762024216218","type":"notification"}
-
-< {"content":"level=346","device":"imei:866762024216218","type":"notification"}
-
-< {"content":"level=307","device":"imei:866762024216218","type":"notification"}
+> {"type":"command","content":"d0=1;","device":"imei:866762024216218"}
 
 ```
  
