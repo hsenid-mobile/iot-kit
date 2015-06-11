@@ -73,6 +73,8 @@ void setup() {
   Serial3.begin(9600);
   addBitlashFunction("sw", (bitlash_function) sw);
   addBitlashFunction("sr", (bitlash_function) sr);
+  addBitlashFunction("dm", (bitlash_function) dm);
+  addBitlashFunction("hc_sr4", (bitlash_function) hc_sr4);
   setOutputHandler(&serialHandler);
   Serial.println("Booting the Device");
   setupIfGPRSNotReady();
@@ -100,6 +102,8 @@ void loop() {
       String response = read_message();
       Serial.println(response);
       device_registered = true;
+      doCommand("stop;");
+      doCommand("run schedule;");
   } else {
       Serial.println(poll_cmd);   
       write_message(poll_cmd);
@@ -334,6 +338,28 @@ numvar sr(){
    return incomingByte; 
 }
 
+void dm() {
+   int delay_micro = getarg(1);
+   delayMicroseconds(delay_micro);
+} 
+
+numvar hc_sr4() {
+  int echo = getarg(1);
+  int trigger = getarg(2);
+  int tuning = getarg(3);
+  
+  pinMode(trigger, OUTPUT);
+  pinMode(echo, INPUT);
+  
+  digitalWrite(trigger, LOW);  
+  delayMicroseconds(2); 
+  digitalWrite(trigger, HIGH);
+  
+  delayMicroseconds(10); 
+  digitalWrite(trigger, LOW);
+  
+  return (pulseIn(echo, HIGH)/2)/tuning;
+}
 
 String split_str(String data, char separator, int index) {
   int found = 0;
