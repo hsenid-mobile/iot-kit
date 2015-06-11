@@ -33,8 +33,6 @@ String command_data = "";
 char* notification_data;
 
 char* saved = "saved";
-char* stop_process = "stop *;";
-char* rm_process = "rm schedule;";
                                        
 int max_ntfy_attempts = 3;
 int notification_retry_count = 0;
@@ -110,9 +108,18 @@ void loop() {
       
       if (response.startsWith("Ok")) {
         Serial.println("No pending command");
-      } else if(response.startsWith("Cmd")) {
-        Serial.println("New command received");
-        execute_instructions(response);        
+      } else if(response.startsWith("Cmd:")) {
+        Serial.println("Command received");
+        execute_instructions(split_str(response, ':', 1));
+      } else if(response.startsWith("CmdP:")) {
+        Serial.println("Large command received as parts");
+        command_data.concat(split_str(response, ':', 1));
+        Serial.println("Waiting for later parts");
+      } else if(response.startsWith("CmdL:")) {
+        Serial.println("Large command's last part received");
+        command_data.concat(split_str(response, ':', 1));
+        execute_instructions(command_data);
+        command_data = "";
       } else {
         Serial.println("Unexpected message/read timeout, reconnecting");
         gprs_connected = false;
@@ -122,7 +129,6 @@ void loop() {
 }
 
 String read_message(){
-  String data = "";
   
   int len = 0;
   int attempts = 0;
@@ -131,19 +137,14 @@ String read_message(){
   receive_buffer[len] = '\0';
   
   while(!gprs.readable() && attempts <= 3) {
-    delay(100); 
+    delay(200); 
     attempts++;
   }  
   
-  if(!gprs.readable() && attempts >= 3) {
-    gprs.close();
-    gprs_connected = false;
-    return "";//this is read timeout
-  } 
- 
   len = gprs.recv(receive_buffer, sizeof(receive_buffer)-1);
     
   if (len <= 0) {
+    Serial.println("Read timeout error");
     return "";//this is read timeout 
   } 
         
@@ -155,7 +156,10 @@ String read_message(){
     }  
   }     
   
-  return String(receive_buffer);     
+  String data = String(receive_buffer);
+  data.trim();
+  
+  return data;     
 }
 
 void write_message(String message){
@@ -241,20 +245,18 @@ void send_notification(){
   }
 }
 
-void execute_instructions(String instruction){
-  instruction.replace("'", "\"");
+void execute_instructions(String cmd){
+  cmd.replace("'", "\"");
    
-  Serial.println(instruction);
-  
-  String cmd =  split_str(instruction, ':', 1);
+  Serial.println(cmd);
  
   if (cmd.startsWith("function")) {
     if (cmd.startsWith("function schedule")) {
        char command_data[256];                              
        cmd.toCharArray(command_data, cmd.length() + 1);
     
-       doCommand(stop_process);
-       doCommand(rm_process);
+       doCommand("stop;");
+       doCommand("rm schedule;");
     
        doCommand(command_data);
        doCommand("run schedule;");
@@ -262,9 +264,9 @@ void execute_instructions(String instruction){
     } else if (cmd.startsWith("function startup")) {
        char command_data[256];                              
        cmd.toCharArray(command_data, cmd.length() + 1);
-    
+       doCommand("rm startup");
        doCommand(command_data);
-       doCommand("run boot;");
+       doCommand("boot;");
        Serial.println("Executing startup command");   
     } else {
        notification_data = "Unsupported function format";
