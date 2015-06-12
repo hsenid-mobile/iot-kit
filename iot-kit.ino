@@ -42,6 +42,10 @@ String return_data="";
 char send_buffer [256];
 char receive_buffer [256];
 
+void nullSerialHandler(byte b) {
+  ;
+}  
+
 void serialHandler(byte b) {
   if (b == 13 ){
     if (return_data.equals("saved")){
@@ -75,6 +79,12 @@ void setup() {
   addBitlashFunction("sr", (bitlash_function) sr);
   addBitlashFunction("dm", (bitlash_function) dm);
   addBitlashFunction("hc_sr4", (bitlash_function) hc_sr4);
+  
+  setOutputHandler(&nullSerialHandler);
+    
+  doCommand("stop;");
+  doCommand("run schedule;");
+      
   setOutputHandler(&serialHandler);
   Serial.println("Booting the Device");
   setupIfGPRSNotReady();
@@ -102,8 +112,6 @@ void loop() {
       String response = read_message();
       Serial.println(response);
       device_registered = true;
-      doCommand("stop;");
-      doCommand("run schedule;");
   } else {
       Serial.println(poll_cmd);   
       write_message(poll_cmd);
