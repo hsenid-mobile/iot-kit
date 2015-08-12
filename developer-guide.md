@@ -1,5 +1,7 @@
 #IoT Kit Developer Guide
 
+added new lines
+
 
 ### Prerequisites
 

@@ -4,6 +4,7 @@ Kit for hSenid Mobile Telco Application Platform's IOT API
 ## Installation Guide
 
 ### Prerequisites
+
 #### Hardware
 
 * Arduino Mega 2560 Board
