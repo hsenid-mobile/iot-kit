@@ -1,8 +1,5 @@
 #IoT Kit Developer Guide
 
-added new lines
-
-
 ### Prerequisites
 
 Setup IoT-Kit as mentioned in [README](https://github.com/hsenid-mobile/iot-kit/README.md)

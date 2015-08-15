@@ -1,5 +1,5 @@
 # IoT-Kit
-Kit for hSenid Mobile Telco Application Platform's IOT API
+Kit for hSenid Mobile IOT API
 
 ## Installation Guide
 
